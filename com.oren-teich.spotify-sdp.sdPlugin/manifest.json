@@ -1,0 +1,69 @@
+{
+	"Name": "spotify-sdp",
+	"Version": "0.1.0.0",
+	"Author": "Oren Teich",
+	"Actions": [
+		{
+			"Name": "Counter",
+			"UUID": "com.oren-teich.spotify-sdp.increment",
+			"Icon": "imgs/actions/counter/icon",
+			"Tooltip": "Displays a count, which increments by one on press.",
+			"PropertyInspectorPath": "ui/increment-counter.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/counter/key",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		{
+			"Name": "Spotify Volume",
+			"UUID": "com.oren-teich.spotify-sdp.volume",
+			"Tooltip": "Control Spotify volume with a dial.",
+			"PropertyInspectorPath": "ui/spotify-volume.html",
+			"Controllers": [
+				"Encoder"
+			],
+			"Encoder": {
+				"layout": "layouts/spotify-volume.json",
+				"TriggerDescription": {
+					"Press": "Reset to 50%"
+				}
+			},
+			"States": [
+				{
+					"TitleAlignment": "middle",
+					"TitleColor": "#FFFFFF",
+					"FontSize": "20"
+				}
+			]
+		}
+	],
+	"Category": "spotify-sdp",
+	"CategoryIcon": "imgs/plugin/category-icon",
+	"CodePath": "bin/plugin.js",
+	"Description": "Control Spotify Volume with the Stream Deck Plus",
+	"Icon": "imgs/plugin/marketplace",
+	"SDKVersion": 2,
+	"Software": {
+		"MinimumVersion": "6.4"
+	},
+	"OS": [
+		{
+			"Platform": "mac",
+			"MinimumVersion": "12"
+		},
+		{
+			"Platform": "windows",
+			"MinimumVersion": "10"
+		}
+	],
+	"Nodejs": {
+		"Version": "20",
+		"Debug": "enabled"
+	},
+	"UUID": "com.oren-teich.spotify-sdp"
+}

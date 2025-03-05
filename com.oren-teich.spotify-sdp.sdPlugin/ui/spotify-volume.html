@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <title>Spotify Volume Settings</title>
+    <meta charset="utf-8" />
+    <script src="https://sdpi-components.dev/releases/v3/sdpi-components.js"></script>
+</head>
+
+<body>
+    <!--
+        Display Spotify Volume control info and current volume
+    -->
+    <sdpi-item label="Spotify Volume Control">
+        <p>Control Spotify volume by rotating the dial. Press to reset to 50%.</p>
+    </sdpi-item>
+    
+    <sdpi-item label="Current Volume">
+        <sdpi-textfield setting="volume" readonly="true" suffix="%"></sdpi-textfield>
+    </sdpi-item>
+</body>
+
+</html>

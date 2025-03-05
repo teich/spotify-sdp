@@ -1,0 +1,42 @@
+{
+    "$schema": "https://schemas.elgato.com/streamdeck/plugins/layout.json",
+    "id": "SpotifyVolumeLayout",
+    "items": [
+        {
+            "key": "title",
+            "type": "text",
+            "rect": [0, 10, 200, 30],
+            "alignment": "center",
+            "font": {
+                "size": 16,
+                "weight": 600
+            },
+            "value": "Spotify Volume"
+        },
+        {
+            "key": "volume",
+            "type": "text",
+            "rect": [0, 50, 180, 30],
+            "alignment": "right",
+            "font": {
+                "size": 24,
+                "weight": 700
+            },
+            "value": "0%"
+        },
+        {
+            "key": "volumeBar",
+            "type": "bar",
+            "rect": [20, 80, 160, 10],
+            "bar_bg_c": "#333333",
+            "bar_fill_c": "#FFFFFF",
+            "bar_border_c": "#666666",
+            "border_w": 1,
+            "range": {
+                "min": 0,
+                "max": 100
+            },
+            "value": 0
+        }
+    ]
+}
