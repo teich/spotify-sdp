@@ -194,8 +194,8 @@ export class SpotifyVolume extends SingletonAction<SpotifyVolumeSettings> {
         
         // Determine which icon to use based on volume
         const iconPath = volume === 0 
-            ? "imgs/actions/spotify-volume/vol-mute" 
-            : "imgs/actions/spotify-volume/vol-icon";
+            ? "imgs/actions/spotify-volume/volume-muted" 
+            : "imgs/actions/spotify-volume/volume";
         
         streamDeck.logger.info(`Setting volume display: Spotify Volume, ${volumeText}, Bar: ${volume}, Icon: ${iconPath}`);
         

@@ -6,7 +6,7 @@
 		{
 			"Name": "Spotify Volume",
 			"UUID": "com.oren-teich.spotify-sdp.volume",
-			"Icon": "imgs/actions/spotify-volume/vol-icon",
+			"Icon": "imgs/actions/spotify-volume/volume",
 			"Tooltip": "Control Spotify volume with a dial.",
 			"PropertyInspectorPath": "ui/spotify-volume.html",
 			"Controllers": [
@@ -20,7 +20,7 @@
 			},
 			"States": [
 				{
-					"Image": "imgs/actions/spotify-volume/vol-icon",
+					"Image": "imgs/actions/spotify-volume/volume",
 					"TitleAlignment": "middle",
 					"TitleColor": "#FFFFFF",
 					"FontSize": 20
@@ -48,7 +48,9 @@
 		"Debug": "enabled"
 	},
 	"ApplicationsToMonitor": {
-        "mac": ["com.spotify.client"]
-    },
+		"mac": [
+			"com.spotify.client"
+		]
+	},
 	"UUID": "com.oren-teich.spotify-sdp"
 }
