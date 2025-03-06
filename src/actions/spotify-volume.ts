@@ -1,4 +1,5 @@
 import { action, DialRotateEvent, DialUpEvent, KeyDownEvent, SingletonAction, TouchTapEvent, WillAppearEvent } from "@elgato/streamdeck";
+import streamDeck from "@elgato/streamdeck";
 import { exec } from "child_process";
 import { promisify } from "util";
 
@@ -27,15 +28,19 @@ export class SpotifyVolume extends SingletonAction<SpotifyVolumeSettings> {
      */
     override async onWillAppear(ev: WillAppearEvent<SpotifyVolumeSettings>): Promise<void> {
         try {
+            streamDeck.logger.info("SpotifyVolume action appearing");
+            
             // Check if Spotify is running
             const isRunning = await this.isSpotifyRunning();
             if (!isRunning) {
+                streamDeck.logger.warn("Spotify is not running");
                 await ev.action.setTitle("Spotify\nNot Running");
                 return;
             }
 
             // Get current volume
             const volume = await this.getSpotifyVolume();
+            streamDeck.logger.info(`Current Spotify volume: ${volume}%`);
             
             // Update settings
             const settings = ev.payload.settings || {};
@@ -45,7 +50,7 @@ export class SpotifyVolume extends SingletonAction<SpotifyVolumeSettings> {
             // Update display
             await this.updateDisplay(ev.action, volume);
         } catch (error) {
-            console.error("Error in onWillAppear:", error);
+            streamDeck.logger.error(`Error in onWillAppear: ${error}`);
             await ev.action.setTitle("Error");
         }
     }
@@ -55,9 +60,12 @@ export class SpotifyVolume extends SingletonAction<SpotifyVolumeSettings> {
      */
     override async onDialUp(ev: DialUpEvent<SpotifyVolumeSettings>): Promise<void> {
         try {
+            streamDeck.logger.info("Dial up event received");
+            
             // Check if Spotify is running
             const isRunning = await this.isSpotifyRunning();
             if (!isRunning) {
+                streamDeck.logger.warn("Spotify is not running");
                 await ev.action.setTitle("Spotify\nNot Running");
                 return;
             }
@@ -72,7 +80,7 @@ export class SpotifyVolume extends SingletonAction<SpotifyVolumeSettings> {
             await ev.action.setSettings(settings);
             await this.updateDisplay(ev.action, volume);
         } catch (error) {
-            console.error("Error in onDialUp:", error);
+            streamDeck.logger.error(`Error in onDialUp: ${error}`);
             await ev.action.setTitle("Error");
         }
     }
@@ -82,9 +90,12 @@ export class SpotifyVolume extends SingletonAction<SpotifyVolumeSettings> {
      */
     override async onTouchTap(ev: TouchTapEvent<SpotifyVolumeSettings>): Promise<void> {
         try {
+            streamDeck.logger.info("Touch tap event received");
+            
             // Check if Spotify is running
             const isRunning = await this.isSpotifyRunning();
             if (!isRunning) {
+                streamDeck.logger.warn("Spotify is not running");
                 await ev.action.setTitle("Spotify\nNot Running");
                 return;
             }
@@ -99,7 +110,7 @@ export class SpotifyVolume extends SingletonAction<SpotifyVolumeSettings> {
             await ev.action.setSettings(settings);
             await this.updateDisplay(ev.action, volume);
         } catch (error) {
-            console.error("Error in onTouchTap:", error);
+            streamDeck.logger.error(`Error in onTouchTap: ${error}`);
             await ev.action.setTitle("Error");
         }
     }
@@ -110,9 +121,12 @@ export class SpotifyVolume extends SingletonAction<SpotifyVolumeSettings> {
      */
     override async onDialRotate(ev: DialRotateEvent<SpotifyVolumeSettings>): Promise<void> {
         try {
+            streamDeck.logger.debug(`Dial rotate event received: ${ev.payload.ticks} ticks`);
+            
             // Check if Spotify is running
             const isRunning = await this.isSpotifyRunning();
             if (!isRunning) {
+                streamDeck.logger.warn("Spotify is not running");
                 await ev.action.setTitle("Spotify\nNot Running");
                 return;
             }
@@ -131,6 +145,7 @@ export class SpotifyVolume extends SingletonAction<SpotifyVolumeSettings> {
             const volumeChange = Math.round(ev.payload.ticks * sensitivity);
             
             let newVolume = Math.max(0, Math.min(100, currentVolume + volumeChange));
+            streamDeck.logger.debug(`Adjusting volume from ${currentVolume}% to ${newVolume}%`);
             
             // Update the target volume
             this.targetVolume = newVolume;
@@ -151,6 +166,7 @@ export class SpotifyVolume extends SingletonAction<SpotifyVolumeSettings> {
                 // Schedule a delayed update
                 this.volumeUpdateTimeout = setTimeout(async () => {
                     if (this.targetVolume !== null) {
+                        streamDeck.logger.debug(`Applying delayed volume change to ${this.targetVolume}%`);
                         await this.setSpotifyVolume(this.targetVolume);
                         this.lastVolumeChangeTime = Date.now();
                         this.targetVolume = null;
@@ -162,7 +178,7 @@ export class SpotifyVolume extends SingletonAction<SpotifyVolumeSettings> {
             // The pending update will use the latest targetVolume
             
         } catch (error) {
-            console.error("Error in onDialRotate:", error);
+            streamDeck.logger.error(`Error in onDialRotate: ${error}`);
             await ev.action.setTitle("Error");
         }
     }
@@ -181,7 +197,17 @@ export class SpotifyVolume extends SingletonAction<SpotifyVolumeSettings> {
             ? "imgs/actions/spotify-volume/vol-mute" 
             : "imgs/actions/spotify-volume/vol-icon";
         
+        streamDeck.logger.info(`Setting volume display: Spotify Volume, ${volumeText}, Bar: ${volume}, Icon: ${iconPath}`);
+        
         try {
+            // First, explicitly set the layout
+            await action.setFeedbackLayout("$B1");
+            streamDeck.logger.info("Layout set successfully");
+            
+            // Set the image directly for the action
+            await action.setImage(iconPath);
+            streamDeck.logger.info("Image set successfully");
+            
             // Set feedback to update the value and indicator in the built-in $B1 layout
             await action.setFeedback({
                 title: "Spotify Volume",
@@ -189,15 +215,13 @@ export class SpotifyVolume extends SingletonAction<SpotifyVolumeSettings> {
                 indicator: volume, // The bar value should be the numeric volume (0-100)
                 icon: iconPath // Add the volume icon using the correct property name
             });
+            streamDeck.logger.info("Feedback set successfully");
             
             // Also set the title for compatibility with other Stream Deck devices
             await action.setTitle(`Spotify Volume`);
         } catch (error) {
-            console.error("Error updating display:", error);
+            streamDeck.logger.error(`Error updating display: ${error}`);
         }
-        
-        // Log for debugging
-        console.log(`Setting volume display: Spotify Volume, ${volumeText}, Bar: ${volume}`);
     }
 
     /**
@@ -222,7 +246,7 @@ export class SpotifyVolume extends SingletonAction<SpotifyVolumeSettings> {
             const { stdout } = await execPromise(script);
             return parseInt(stdout.trim(), 10);
         } catch (error) {
-            console.error("Error getting Spotify volume:", error);
+            streamDeck.logger.error(`Error getting Spotify volume: ${error}`);
             throw error;
         }
     }
@@ -235,7 +259,7 @@ export class SpotifyVolume extends SingletonAction<SpotifyVolumeSettings> {
             const script = `osascript -e "tell application \\"Spotify\\" to set sound volume to ${volume}"`;
             await execPromise(script);
         } catch (error) {
-            console.error("Error setting Spotify volume:", error);
+            streamDeck.logger.error(`Error setting Spotify volume: ${error}`);
             throw error;
         }
     }
@@ -247,9 +271,9 @@ export class SpotifyVolume extends SingletonAction<SpotifyVolumeSettings> {
         try {
             const script = 'osascript -e "tell application \\"Spotify\\" to playpause"';
             await execPromise(script);
-            console.log("Toggled Spotify play/pause");
+            streamDeck.logger.info("Toggled Spotify play/pause");
         } catch (error) {
-            console.error("Error toggling play/pause:", error);
+            streamDeck.logger.error(`Error toggling play/pause: ${error}`);
             throw error;
         }
     }
@@ -269,15 +293,15 @@ export class SpotifyVolume extends SingletonAction<SpotifyVolumeSettings> {
             if (currentVolume === 0) {
                 // We're muted, restore previous volume or default to 50%
                 await this.setSpotifyVolume(this.previousVolume);
-                console.log(`Unmuted Spotify (volume restored to ${this.previousVolume}%)`);
+                streamDeck.logger.info(`Unmuted Spotify (volume restored to ${this.previousVolume}%)`);
             } else {
                 // We're not muted, save current volume and mute
                 this.previousVolume = currentVolume;
                 await this.setSpotifyVolume(0);
-                console.log(`Muted Spotify (previous volume was ${currentVolume}%)`);
+                streamDeck.logger.info(`Muted Spotify (previous volume was ${currentVolume}%)`);
             }
         } catch (error) {
-            console.error("Error toggling mute:", error);
+            streamDeck.logger.error(`Error toggling mute: ${error}`);
             throw error;
         }
     }
