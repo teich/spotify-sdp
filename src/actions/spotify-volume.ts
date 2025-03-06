@@ -178,8 +178,8 @@ export class SpotifyVolume extends SingletonAction<SpotifyVolumeSettings> {
         
         // Determine which icon to use based on volume
         const iconPath = volume === 0 
-            ? "imgs/actions/spotify-volume/vol-mute.svg" 
-            : "imgs/actions/spotify-volume/vol-icon.svg";
+            ? "imgs/actions/spotify-volume/vol-mute" 
+            : "imgs/actions/spotify-volume/vol-icon";
         
         try {
             // Set feedback to update the value and indicator in the built-in $B1 layout

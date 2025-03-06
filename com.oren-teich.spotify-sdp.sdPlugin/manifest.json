@@ -36,6 +36,7 @@
 			},
 			"States": [
 				{
+					"Image": "imgs/actions/spotify-volume/vol-icon",
 					"TitleAlignment": "middle",
 					"TitleColor": "#FFFFFF",
 					"FontSize": 20
@@ -56,15 +57,14 @@
 		{
 			"Platform": "mac",
 			"MinimumVersion": "12"
-		},
-		{
-			"Platform": "windows",
-			"MinimumVersion": "10"
 		}
 	],
 	"Nodejs": {
 		"Version": "20",
 		"Debug": "enabled"
 	},
+	"ApplicationsToMonitor": {
+        "mac": ["com.spotify.client"]
+    },
 	"UUID": "com.oren-teich.spotify-sdp"
 }
