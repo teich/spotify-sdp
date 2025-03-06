@@ -1,19 +1,19 @@
-# Spotify Volume Control for Stream Deck (macOS only)
+# Spotify Volume Control for Stream Deck + (macOS only)
 
-A Stream Deck plugin that allows you to control Spotify volume using the dial on your Stream Deck Plus. Easily adjust volume, mute/unmute, and see visual feedback of your current volume level. This plugin is specifically designed for macOS, providing app-specific volume control for Spotify that the default volume controller plugin in the Elgato marketplace doesn't support on Mac.
+A Stream Deck plugin that allows you to control Spotify volume using the dial on your Stream Deck +. Easily adjust volume, mute/unmute, and see visual feedback of your current volume level. This plugin is specifically designed for the Stream Deck + model with rotary encoder dials and macOS, providing app-specific volume control for Spotify that the default volume controller plugin in the Elgato marketplace doesn't support on Mac. If you have a button-based Stream Deck model (not the + version), please use one of the other existing Spotify plugins.
 
 ## Features
 
-- Control Spotify volume by rotating the dial on Stream Deck Plus
+- Control Spotify volume by rotating the dial on Stream Deck + (requires Stream Deck + model with rotary encoder dial)
 - Mute/unmute Spotify by pressing the dial or tapping the touchscreen
 - Visual feedback showing current volume level with percentage and bar indicator
 - Smooth volume transitions with throttling to prevent overwhelming Spotify with rapid changes
 - Automatic detection of Spotify running state
-- Optimized for Stream Deck Plus with dial controls
+- Optimized for Stream Deck + with dial controls
 
 ## Requirements
 
-- Stream Deck Plus (with dial controls)
+- Stream Deck + model (with rotary encoder dial) - this plugin ONLY works with the Stream Deck + model
 - **macOS 12 or later** (this plugin is macOS only)
 - Spotify desktop application
 - Stream Deck software v6.4 or later
@@ -29,7 +29,7 @@ A Stream Deck plugin that allows you to control Spotify volume using the dial on
 ### Adding to Stream Deck
 
 1. Open the Stream Deck software
-2. Drag the "Spotify Volume" action to an encoder slot on your Stream Deck Plus
+2. Drag the "Spotify Volume" action to an encoder slot on your Stream Deck + (requires the rotary encoder dial)
 3. The action will automatically display the current Spotify volume when Spotify is running
 
 ### Controlling Volume
