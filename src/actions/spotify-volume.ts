@@ -1,4 +1,4 @@
-import { action, DialRotateEvent, KeyDownEvent, SingletonAction, WillAppearEvent } from "@elgato/streamdeck";
+import { action, DialRotateEvent, DialUpEvent, KeyDownEvent, SingletonAction, TouchTapEvent, WillAppearEvent } from "@elgato/streamdeck";
 import { exec } from "child_process";
 import { promisify } from "util";
 
@@ -51,9 +51,9 @@ export class SpotifyVolume extends SingletonAction<SpotifyVolumeSettings> {
     }
     
     /**
-     * Handle key down events to reset volume to 50%.
+     * Handle dial up events to toggle mute/unmute.
      */
-    override async onKeyDown(ev: KeyDownEvent<SpotifyVolumeSettings>): Promise<void> {
+    override async onDialUp(ev: DialUpEvent<SpotifyVolumeSettings>): Promise<void> {
         try {
             // Check if Spotify is running
             const isRunning = await this.isSpotifyRunning();
@@ -62,19 +62,44 @@ export class SpotifyVolume extends SingletonAction<SpotifyVolumeSettings> {
                 return;
             }
 
-            // Reset volume to 50%
-            const defaultVolume = 50;
-            await this.setSpotifyVolume(defaultVolume);
+            // Toggle mute/unmute
+            await this.toggleMute();
             
-            // Update settings
+            // Update volume display
+            const volume = await this.getSpotifyVolume();
             const settings = ev.payload.settings || {};
-            settings.volume = defaultVolume;
+            settings.volume = volume;
             await ev.action.setSettings(settings);
-            
-            // Update display
-            await this.updateDisplay(ev.action, defaultVolume);
+            await this.updateDisplay(ev.action, volume);
         } catch (error) {
-            console.error("Error in onKeyDown:", error);
+            console.error("Error in onDialUp:", error);
+            await ev.action.setTitle("Error");
+        }
+    }
+    
+    /**
+     * Handle touch tap events on the touchscreen to toggle mute/unmute.
+     */
+    override async onTouchTap(ev: TouchTapEvent<SpotifyVolumeSettings>): Promise<void> {
+        try {
+            // Check if Spotify is running
+            const isRunning = await this.isSpotifyRunning();
+            if (!isRunning) {
+                await ev.action.setTitle("Spotify\nNot Running");
+                return;
+            }
+
+            // Toggle mute/unmute
+            await this.toggleMute();
+            
+            // Update volume display
+            const volume = await this.getSpotifyVolume();
+            const settings = ev.payload.settings || {};
+            settings.volume = volume;
+            await ev.action.setSettings(settings);
+            await this.updateDisplay(ev.action, volume);
+        } catch (error) {
+            console.error("Error in onTouchTap:", error);
             await ev.action.setTitle("Error");
         }
     }
@@ -144,25 +169,29 @@ export class SpotifyVolume extends SingletonAction<SpotifyVolumeSettings> {
 
     /**
      * Update the display with the current volume.
-     * Uses the custom layout to show the title, volume percentage, and volume bar.
+     * Uses the built-in $B1 layout to show the title, icon, volume percentage, and volume bar.
      */
     private async updateDisplay(action: any, volume: number): Promise<void> {
-        // Update the volume text in the custom layout
+        // Update the volume text in the built-in layout
         // Format to match system volume display
         const volumeText = `${volume}%`;
         
+        // Determine which icon to use based on volume
+        const iconPath = volume === 0 
+            ? "imgs/actions/spotify-volume/vol-mute.svg" 
+            : "imgs/actions/spotify-volume/vol-icon.svg";
+        
         try {
-            // Set feedback to update the volume text and bar in the custom layout
+            // Set feedback to update the value and indicator in the built-in $B1 layout
             await action.setFeedback({
-                volume: volumeText,
-                volumeBar: volume // The bar value should be the numeric volume (0-100)
+                title: "Spotify Volume",
+                value: volumeText,
+                indicator: volume, // The bar value should be the numeric volume (0-100)
+                icon: iconPath // Add the volume icon using the correct property name
             });
             
             // Also set the title for compatibility with other Stream Deck devices
-            await action.setTitle(`Spotify Volume\n${volumeText}`);
-            
-            // Clear any image that might be set
-            await action.setImage(null);
+            await action.setTitle(`Spotify Volume`);
         } catch (error) {
             console.error("Error updating display:", error);
         }
@@ -210,6 +239,48 @@ export class SpotifyVolume extends SingletonAction<SpotifyVolumeSettings> {
             throw error;
         }
     }
+    
+    /**
+     * Toggle play/pause in Spotify using AppleScript.
+     */
+    private async togglePlayPause(): Promise<void> {
+        try {
+            const script = 'osascript -e "tell application \\"Spotify\\" to playpause"';
+            await execPromise(script);
+            console.log("Toggled Spotify play/pause");
+        } catch (error) {
+            console.error("Error toggling play/pause:", error);
+            throw error;
+        }
+    }
+    
+    // Store the previous volume for mute/unmute functionality
+    private previousVolume: number = 50;
+    
+    /**
+     * Toggle mute/unmute in Spotify by saving current volume and setting to 0, or restoring previous volume.
+     */
+    private async toggleMute(): Promise<void> {
+        try {
+            // Get current volume
+            const currentVolume = await this.getSpotifyVolume();
+            
+            // Check if we're already muted (volume is 0)
+            if (currentVolume === 0) {
+                // We're muted, restore previous volume or default to 50%
+                await this.setSpotifyVolume(this.previousVolume);
+                console.log(`Unmuted Spotify (volume restored to ${this.previousVolume}%)`);
+            } else {
+                // We're not muted, save current volume and mute
+                this.previousVolume = currentVolume;
+                await this.setSpotifyVolume(0);
+                console.log(`Muted Spotify (previous volume was ${currentVolume}%)`);
+            }
+        } catch (error) {
+            console.error("Error toggling mute:", error);
+            throw error;
+        }
+    }
 }
 
 /**
@@ -217,4 +288,5 @@ export class SpotifyVolume extends SingletonAction<SpotifyVolumeSettings> {
  */
 type SpotifyVolumeSettings = {
     volume?: number;
+    previousVolume?: number;
 };

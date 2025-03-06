@@ -22,22 +22,23 @@
 		{
 			"Name": "Spotify Volume",
 			"UUID": "com.oren-teich.spotify-sdp.volume",
+			"Icon": "imgs/actions/spotify-volume/vol-icon",
 			"Tooltip": "Control Spotify volume with a dial.",
 			"PropertyInspectorPath": "ui/spotify-volume.html",
 			"Controllers": [
 				"Encoder"
 			],
 			"Encoder": {
-				"layout": "layouts/spotify-volume.json",
+				"layout": "$B1",
 				"TriggerDescription": {
-					"Press": "Reset to 50%"
+					"Push": "Mute/Unmute Spotify"
 				}
 			},
 			"States": [
 				{
 					"TitleAlignment": "middle",
 					"TitleColor": "#FFFFFF",
-					"FontSize": "20"
+					"FontSize": 20
 				}
 			]
 		}
